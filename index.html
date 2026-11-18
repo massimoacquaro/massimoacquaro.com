@@ -3,7 +3,48 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Massimo Acquaro</title>
+<title>Massimo Acquaro — Fashion Designer, Melbourne &amp; Paris</title>
+<meta name="description" content="Massimo Acquaro is a fashion designer based in Melbourne and Paris, co-founder of the menswear label Observe, and a Master of Architecture graduate of the University of Melbourne.">
+<meta name="author" content="Massimo Acquaro">
+<link rel="canonical" href="https://massimoacquaro.com/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Massimo Acquaro">
+<meta property="og:title" content="Massimo Acquaro — Fashion Designer">
+<meta property="og:description" content="Fashion designer based in Melbourne and Paris. Co-founder of the menswear label Observe.">
+<meta property="og:url" content="https://massimoacquaro.com/">
+<meta property="profile:first_name" content="Massimo">
+<meta property="profile:last_name" content="Acquaro">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://massimoacquaro.com/#website",
+      "url": "https://massimoacquaro.com/",
+      "name": "Massimo Acquaro",
+      "about": { "@id": "https://massimoacquaro.com/#person" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://massimoacquaro.com/#person",
+      "name": "Massimo Acquaro",
+      "url": "https://massimoacquaro.com/",
+      "jobTitle": "Fashion Designer",
+      "description": "Fashion designer based in Melbourne and Paris, co-founder of the menswear label Observe.",
+      "homeLocation": [
+        { "@type": "City", "name": "Melbourne" },
+        { "@type": "City", "name": "Paris" }
+      ],
+      "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of Melbourne" },
+      "founder": { "@type": "Organization", "name": "Observe", "url": "https://observegallery.com" },
+      "sameAs": [ "https://www.instagram.com/massimoaacquaro/" ]
+    }
+  ]
+}
+</script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: #fff; color: #000; }
@@ -14,6 +55,7 @@
 
   header { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-between; padding: 20px 24px; background: #fff; }
   header nav a { margin-left: 28px; }
+  header h1 { font: inherit; }
 
   aside { position: fixed; top: 64px; left: 24px; bottom: 24px; width: 230px; overflow-y: auto; scrollbar-width: none; }
   aside::-webkit-scrollbar { display: none; }
@@ -99,11 +141,17 @@
 </head>
 <body>
 <header>
-  <a href="#" id="name"></a>
+  <h1><a href="#" id="name">Massimo Acquaro</a></h1>
   <nav><a href="#index" id="nav-index">Index</a><a href="#info" id="nav-info">Info</a></nav>
 </header>
 <aside><div class="cats" id="cats"></div><div class="list" id="list"></div></aside>
-<main id="main"></main>
+<main id="main">
+  <!-- Shown before the script runs (and to crawlers that don't run scripts); replaced on load. -->
+  <div class="info">
+    <p>Massimo Acquaro is a fashion designer based in Melbourne, working between Melbourne and Paris.</p>
+    <p>He is a graduate of the Master of Architecture at the University of Melbourne, and co-founder of the menswear label <a href="https://observegallery.com">Observe</a>.</p>
+  </div>
+</main>
 <div id="tag"></div>
 <div id="count"></div>
 
@@ -351,7 +399,6 @@ function render() {
   window.scrollTo(0, 0);
 }
 $("#name").textContent = SITE.name;
-document.title = SITE.name;
 addEventListener("hashchange", render);
 render();
 </script>
