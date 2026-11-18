@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Massimo Acquaro</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; color: #000; }
+  body { font-family: "Times New Roman", Times, serif; font-size: 13px; line-height: 1.35; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; cursor: pointer; }
+  a:hover, a.on { text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+  .muted { color: #9a9a9a; }
+
+  header { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-between; padding: 20px 24px; background: #fff; }
+  header nav a { margin-left: 28px; }
+
+  aside { position: fixed; top: 64px; left: 24px; bottom: 24px; width: 230px; overflow-y: auto; scrollbar-width: none; }
+  aside::-webkit-scrollbar { display: none; }
+  .cats { margin-bottom: 22px; }
+  .cats a { display: block; }
+  .cats .n { display: inline-block; width: 26px; }
+  .list a { display: block; }
+  .list .id { display: inline-block; width: 44px; }
+  .list .grp + .grp { margin-top: 14px; }
+
+  main { margin-left: 294px; padding: 64px 24px 96px 0; min-height: 100vh; }
+
+  /* Slides: one image per screen */
+  html.snap { scroll-snap-type: y mandatory; }
+  .slide { height: 100vh; scroll-snap-align: start; padding-top: 64px; padding-bottom: 56px; display: flex; flex-direction: column; justify-content: center; }
+  .frame { display: block; overflow: hidden; background: #eee; cursor: pointer; }
+  .frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .unit.p { width: min(100%, calc((100vh - 150px) * 0.75)); }
+  .unit.l { width: min(100%, calc((100vh - 150px) * 1.3333)); }
+  .unit.p .frame { aspect-ratio: 3 / 4; }
+  .unit.l .frame { aspect-ratio: 4 / 3; }
+  .frame.txt { background: #fff; border: 1px solid #000; padding: 16px; font-size: 26px; line-height: 1.15; display: flex; align-items: flex-end; }
+  .under { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 24px; margin-top: 8px; }
+  .under .t { display: none; }
+  #count { position: fixed; right: 24px; bottom: 20px; z-index: 5; background: #fff; }
+
+  /* Text entry */
+  .essay { max-width: 560px; padding-top: 0; font-size: 16px; line-height: 1.45; }
+  .essay h1 { font-size: clamp(28px, 3vw, 40px); font-weight: normal; line-height: 1.1; margin: 6px 0 28px; }
+  .essay p { margin-bottom: 1em; }
+  .essay .small { font-size: 13px; }
+
+  /* The label */
+  #tag {
+    position: fixed; z-index: 30; pointer-events: none; display: none;
+    background: #fff; border: 1px solid #000; padding: 6px 9px 7px; min-width: 190px; max-width: 280px;
+    font-size: 12px; line-height: 1.3;
+  }
+  #tag .r { display: flex; justify-content: space-between; gap: 16px; }
+  #tag .rule { border-top: 1px solid #000; margin: 5px -9px; }
+  #tag .big { font-size: 14px; }
+
+  /* Thumbnail grid */
+  .head-t { margin-bottom: 28px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 32px 20px; align-items: end; padding-bottom: 40px; }
+  .grid figure { cursor: pointer; }
+  .grid .cell { aspect-ratio: 3 / 4; display: flex; align-items: flex-end; }
+  .grid img { width: 100%; height: 100%; object-fit: contain; object-position: bottom left; display: block; }
+  .grid figure:hover img { opacity: .75; }
+  .grid figcaption { margin-top: 5px; }
+  #count a { cursor: pointer; }
+
+  /* Index page */
+  .idx { max-width: 900px; }
+  .idx a { display: grid; grid-template-columns: 56px minmax(180px, 1.2fr) 2fr 40px; gap: 16px; padding: 3px 0; border-bottom: 1px solid #e6e6e6; }
+  .idx a span:last-child { text-align: right; }
+  .idx .ch { margin-top: 28px; border-bottom: 1px solid #000; }
+  .idx .ch:first-child { margin-top: 0; }
+  #peek { position: fixed; z-index: 30; width: 200px; pointer-events: none; display: none; }
+
+  /* Info */
+  .info { max-width: 520px; }
+  .info p { margin-bottom: 1em; }
+  .info .row { display: grid; grid-template-columns: 110px 1fr; min-height: 1.35em; }
+
+  @media (hover: none) { .under .t { display: block; } }
+  @media (max-width: 760px) {
+    header { padding: 16px; }
+    header nav a { margin-left: 18px; }
+    aside { position: static; width: auto; padding: 60px 16px 0; overflow: visible; }
+    main { margin-left: 0; padding: 32px 16px 80px; min-height: 0; }
+    html.snap { scroll-snap-type: none; }
+    .slide { height: auto; padding: 0 0 40px; display: block; }
+    .unit.p, .unit.l { width: 100%; }
+    .under .t { display: block; }
+    #count { right: 16px; bottom: 12px; padding: 2px 0 2px 8px; }
+    .grid { grid-template-columns: repeat(3, 1fr); gap: 20px 10px; }
+    #tag, #peek { display: none !important; }
+    .idx a { grid-template-columns: 48px 1fr 40px; }
+    .idx a span:nth-child(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a href="#" id="name"></a>
+  <nav><a href="#index" id="nav-index">Index</a><a href="#info" id="nav-info">Info</a></nav>
+</header>
+<aside><div class="cats" id="cats"></div><div class="list" id="list"></div></aside>
+<main id="main"></main>
+<div id="tag"></div>
+<div id="count"></div>
+
+<script>
+/* ============================================================
+   EDIT HERE. Everything on the site comes from this block.
+   ============================================================ */
+const SITE = {
+  name: "Massimo Acquaro",
+  info: [
+    "Massimo Acquaro is a fashion designer based in Melbourne, working between Melbourne and Paris.",
+    "He is a graduate of the Master of Architecture at the University of Melbourne, and co-founder of the menswear label Observe.",
+    "All images by Massimo Acquaro."
+  ],
+  contact: [
+    ["Based", "Melbourne and Paris"],
+    ["Label", '<a href="https://observegallery.com">Observe</a>, co-founder'],
+    ["Study", "Master of Architecture, University of Melbourne"],
+    ["", ""],
+    ["Email", '<a href="mailto:massimoacquaro@gmail.com">massimoacquaro@gmail.com</a>'],
+    ["Instagram", '<a href="https://www.instagram.com/massimoaacquaro/">@massimoaacquaro</a>']
+  ]
+};
+
+const CATEGORIES = [
+  { n: "01", key: "observe",      name: "Observe" },
+  { n: "02", key: "image",        name: "Image" },
+  { n: "03", key: "architecture", name: "Architecture" },
+  { n: "04", key: "text",         name: "Text" }
+];
+
+// label  = how it reads in the list and captions.
+// tags   = the dot-string after "ID.Category.", in order.
+// images = a number (grey placeholders) or a list of paths, e.g. ["images/ob01-1.jpg", "images/ob01-2.jpg"].
+// body   = optional paragraphs shown on the project page. Text entries can have images: 0.
+const PROJECTS = [
+  { id: "OB01", cat: "observe",      label: "Spring/Summer 2027",              tags: ["SS27", "SpringSummer", "2027"],    images: 10 },
+  { id: "OB02", cat: "observe",      label: "Autumn/Winter 2026",              tags: ["AW26", "AutumnWinter", "2026"],    images: 10 },
+  { id: "OB03", cat: "observe",      label: "Spring/Summer 2026",              tags: ["SS26", "SpringSummer", "2026"],    images: 10 },
+
+  { id: "IM01", cat: "image",        label: "SS27 Kurikuji, Tokyo",            tags: ["SS27", "Kurikuji", "Tokyo"],       images: 8 },
+  { id: "IM02", cat: "image",        label: "SS27 Melbourne, Australia",       tags: ["SS27", "Melbourne", "Australia"],  images: ["images/estella-01.jpg", "images/estella-02.jpg", "images/estella-03.jpg", "images/estella-04.jpg", "images/estella-05.jpg"] },
+  { id: "IM03", cat: "image",        label: "SS27 Paris, France",              tags: ["SS27", "Paris", "France"],         images: 8 },
+  { id: "IM04", cat: "image",        label: "AW26 Paris, France",              tags: ["AW26", "Paris", "France"],         images: 8 },
+  { id: "IM05", cat: "image",        label: "SS26 Melbourne, Australia",       tags: ["SS26", "Melbourne", "Australia"],  images: ["images/ss26-mel-01.jpg", "images/ss26-mel-02.jpg", "images/ss26-mel-03.jpg", "images/ss26-mel-04.jpg", "images/ss26-mel-05.jpg", "images/ss26-mel-06.jpg", "images/ss26-mel-07.jpg", "images/ss26-mel-08.jpg", "images/ss26-mel-09.jpg", "images/ss26-mel-10.jpg", "images/ss26-mel-11.jpg", "images/ss26-mel-12.jpg", "images/ss26-mel-13.jpg", "images/ss26-mel-14.jpg", "images/ss26-mel-15.jpg"] },
+
+  { id: "AR01", cat: "architecture", label: "26-01 Hugo's Kitchen",            tags: ["26-01", "HugosKitchen"],           images: 7 },
+  { id: "AR02", cat: "architecture", label: "T501 Thesis",                     tags: ["T501", "Thesis"],                  images: 7 },
+  { id: "AR03", cat: "architecture", label: "W3, Dookie",                      tags: ["W3", "Dookie"],                    images: 7 },
+  { id: "AR04", cat: "architecture", label: "0334",                            tags: ["0334"],                            images: 7 },
+
+  { id: "TX01", cat: "text",         label: "Architect-ural Sex Appeal, 2026", tags: ["Architect-uralSexAppeal", "2026"], images: 0,
+    body: ["Text to come. Paste the essay here, one paragraph per item in this list."] }
+];
+/* ============================================================ */
+
+const $ = s => document.querySelector(s);
+const main = $("#main"), tag = $("#tag");
+const catOf = k => CATEGORIES.find(c => c.key === k);
+const camel = s => s.replace(/[\s'\/]+/g, "");
+const pad = n => String(n).padStart(2, "0");
+
+// Grey placeholders until real paths are added
+const RATIOS = [[3,4],[3,4],[4,3],[3,4],[4,3]];
+function placeholder(p, i) {
+  const [w, h] = RATIOS[(p.id.charCodeAt(2) + p.id.charCodeAt(3) + i) % RATIOS.length];
+  const tone = 212 + ((p.id.charCodeAt(3) * 7 + i * 11) % 32);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w*100} ${h*100}"><rect width="100%" height="100%" fill="rgb(${tone},${tone},${tone-2})"/><text x="12" y="${h*100-14}" font-family="Times New Roman" font-size="14" fill="#666">${p.id}/${pad(i+1)}</text></svg>`;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+const imgs = p => Array.isArray(p.images) ? p.images : Array.from({ length: p.images || 0 }, (_, i) => placeholder(p, i));
+const dotString = p => [p.id, catOf(p.cat).name, ...p.tags.map(camel)].join(".") + ".";
+const link = p => "#" + p.id.toLowerCase();
+
+// ---------- Left index ----------
+function renderAside(r) {
+  const active = catOf(r) ? r : null;
+  const proj = PROJECTS.find(p => p.id.toLowerCase() === r);
+  const showCat = active || (proj && proj.cat);
+  $("#cats").innerHTML =
+    `<a href="#" class="${r === "" ? "on" : ""}"><span class="n">00</span>All (${PROJECTS.length})</a>` +
+    CATEGORIES.map(c => `<a href="#${c.key}" class="${showCat === c.key ? "on" : ""}"><span class="n">${c.n}</span>${c.name} (${PROJECTS.filter(p => p.cat === c.key).length})</a>`).join("");
+  $("#list").innerHTML = CATEGORIES.filter(c => !active || c.key === active).map(c =>
+    `<div class="grp">` + PROJECTS.filter(p => p.cat === c.key).map(p =>
+      `<a href="${link(p)}" data-id="${p.id}" class="${proj === p ? "on" : ""}"><span class="id">${p.id}</span>${p.label}</a>`
+    ).join("") + `</div>`).join("");
+}
+
+// ---------- Label ----------
+function tagHTML(p) {
+  const c = catOf(p.cat), n = imgs(p).length;
+  return `<div class="r"><span>${p.id}</span><span>${c.n} ${c.name}</span></div>
+    <div class="rule"></div>
+    <div class="big">${p.label}</div>
+    <div class="rule"></div>
+    <div class="r muted"><span>${dotString(p)}</span></div>
+    <div class="r"><span>${n ? pad(n) + " images" : "Text"}</span><span>→</span></div>`;
+}
+const peek = document.createElement("img"); peek.id = "peek"; document.body.appendChild(peek);
+function showPeek(p) { peek.src = imgs(p)[0]; peek.style.display = "block"; }
+function hidePeek() { peek.style.display = "none"; }
+function showTag(p) { tag.innerHTML = tagHTML(p); tag.style.display = "block"; }
+function hideTag() { tag.style.display = "none"; }
+document.addEventListener("mousemove", e => {
+  if (peek.style.display === "block") {
+    let x = e.clientX + 24, y = e.clientY + 16;
+    if (x + peek.offsetWidth > innerWidth - 12) x = e.clientX - peek.offsetWidth - 24;
+    if (y + peek.offsetHeight > innerHeight - 12) y = innerHeight - peek.offsetHeight - 12;
+    peek.style.left = x + "px"; peek.style.top = y + "px";
+  }
+  if (tag.style.display !== "block") return;
+  const w = tag.offsetWidth, h = tag.offsetHeight;
+  let x = e.clientX + 18, y = e.clientY + 18;
+  if (x + w > innerWidth - 10) x = e.clientX - w - 18;
+  if (y + h > innerHeight - 10) y = e.clientY - h - 18;
+  tag.style.left = x + "px"; tag.style.top = y + "px";
+});
+
+// ---------- Slides ----------
+// Each image sits in a 3:4 frame if portrait, 4:3 if landscape (decided when it loads).
+function frameHTML(src, alt) {
+  return `<div class="frame"><img src="${src}" alt="${alt}" onload="this.closest('.unit').className='unit '+(this.naturalWidth>this.naturalHeight?'l':'p')"></div>`;
+}
+let slides = [];
+function trackCount(labelFor) {
+  slides = [...main.querySelectorAll(".slide")];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) $("#count").innerHTML = labelFor(slides.indexOf(e.target));
+  }), { threshold: 0.6 });
+  slides.forEach(sl => io.observe(sl));
+  $("#count").innerHTML = labelFor(0);
+  return io;
+}
+let io = null;
+
+// Home / category: one cover per project, one per screen
+function viewField(filter) {
+  const list = PROJECTS.filter(p => !filter || p.cat === filter);
+  document.documentElement.classList.add("snap");
+  main.innerHTML = list.map(p => {
+    const first = imgs(p)[0];
+    return `<section class="slide" data-id="${p.id}"><div class="unit p">
+      ${first ? frameHTML(first, p.label) : `<div class="frame txt">${p.label}</div>`}
+      <div class="under"><span class="t">${p.id} ${p.label}</span></div></div></section>`;
+  }).join("");
+  main.querySelectorAll(".slide").forEach(sl => {
+    const p = PROJECTS.find(x => x.id === sl.dataset.id), f = sl.querySelector(".frame");
+    f.onclick = () => location.hash = link(p);
+    f.onmouseenter = () => showTag(p);
+    f.onmouseleave = hideTag;
+  });
+  const cc = filter ? catOf(filter) : null;
+  io = trackCount(i => `${cc ? cc.n + " " + cc.name + "&nbsp;&nbsp;&nbsp;" : ""}${pad(i + 1)}/${pad(list.length)}`);
+}
+
+// Project page: every image, one per screen
+let thumbMode = false;
+function viewProject(p, startAt = 0) {
+  const list = imgs(p), c = catOf(p.cat);
+  const i = PROJECTS.indexOf(p);
+  const next = PROJECTS[(i + 1) % PROJECTS.length];
+  if (!list.length) {
+    document.documentElement.classList.remove("snap");
+    $("#count").innerHTML = `<a href="${link(next)}">${next.id} →</a>`;
+    main.innerHTML = `<div class="essay">
+      <p class="muted small">${dotString(p)}</p><h1>${p.label}</h1>
+      ${(p.body || []).map(t => `<p>${t}</p>`).join("")}</div>`;
+    return;
+  }
+  const toggle = (label, fn) => { const a = document.createElement("a"); a.textContent = label; a.onclick = fn; return a; };
+
+  // Thumbnail grid: every image of the project at once
+  if (thumbMode) {
+    if (io) { io.disconnect(); io = null; }
+    document.documentElement.classList.remove("snap");
+    main.innerHTML = `<div class="head-t"><b>${p.label}</b>&nbsp;&nbsp;<span class="muted">${dotString(p)}</span></div>
+      <div class="grid">${list.map((src, k) => `<figure data-k="${k}"><div class="cell"><img src="${src}" alt="${p.label} ${k + 1}" loading="lazy"></div>
+      <figcaption class="muted">${pad(k + 1)}</figcaption></figure>`).join("")}</div>`;
+    main.querySelectorAll(".grid figure").forEach(f => f.onclick = () => { thumbMode = false; viewProject(p, +f.dataset.k); });
+    $("#count").innerHTML = `${pad(list.length)} images&nbsp;&nbsp;&nbsp;`;
+    const t = toggle("thumbnails", () => { thumbMode = false; viewProject(p); }); t.className = "on";
+    $("#count").appendChild(t);
+    $("#count").insertAdjacentHTML("beforeend", `&nbsp;&nbsp;&nbsp;<a href="${link(next)}">${next.id} →</a>`);
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+    return;
+  }
+
+  document.documentElement.classList.add("snap");
+  main.innerHTML = list.map((src, k) => `<section class="slide"><div class="unit p">
+      ${frameHTML(src, p.label + " " + (k + 1))}
+      <div class="under"><span><b>${p.label}</b>&nbsp;&nbsp;<span class="muted">${p.id}/${pad(k + 1)}</span></span>
+      ${k === 0 ? `<span class="muted">${dotString(p)}</span>` : ""}</div></div></section>`).join("");
+  // Click an image to go to the next one; after the last, the next project
+  main.querySelectorAll(".frame").forEach((f, k) => f.onclick = () => {
+    if (k + 1 < list.length) main.querySelectorAll(".slide")[k + 1].scrollIntoView({ behavior: "smooth" });
+    else location.hash = link(next);
+  });
+  if (io) io.disconnect();
+  io = trackCount(k => `${pad(k + 1)}/${pad(list.length)}&nbsp;&nbsp;&nbsp;<a class="tg">thumbnails</a>&nbsp;&nbsp;&nbsp;<a href="${link(next)}">${next.id} →</a>`);
+  $("#count").onclick = e => { if (e.target.classList.contains("tg")) { thumbMode = true; viewProject(p); } };
+  if (startAt) main.querySelectorAll(".slide")[startAt].scrollIntoView();
+  else window.scrollTo(0, 0);
+}
+
+function viewIndex() {
+  document.documentElement.classList.remove("snap");
+  $("#count").innerHTML = "";
+  main.innerHTML = `<div class="idx">` + CATEGORIES.map(c => `
+    <a class="ch" href="#${c.key}"><span>${c.n}</span><span>${c.name}</span><span></span><span class="muted">${pad(PROJECTS.filter(p => p.cat === c.key).length)}</span></a>` +
+    PROJECTS.filter(p => p.cat === c.key).map(p => `
+    <a class="row" href="${link(p)}" data-id="${p.id}"><span>${p.id}</span><span>${p.label}</span><span class="muted">${dotString(p)}</span><span class="muted">${imgs(p).length ? pad(imgs(p).length) : "Text"}</span></a>`).join("")
+  ).join("") + `</div>`;
+  main.querySelectorAll(".row").forEach(r => {
+    const p = PROJECTS.find(x => x.id === r.dataset.id);
+    r.onmouseenter = () => imgs(p).length && showPeek(p);
+    r.onmouseleave = hidePeek;
+  });
+}
+
+function viewInfo() {
+  document.documentElement.classList.remove("snap");
+  $("#count").innerHTML = "";
+  main.innerHTML = `<div class="info">
+    ${SITE.info.map(t => `<p>${t}</p>`).join("")}<p>&nbsp;</p>
+    ${SITE.contact.map(([k, v]) => `<div class="row"><span class="muted">${k}</span><span>${v}</span></div>`).join("")}<p>&nbsp;</p>
+    ${CATEGORIES.map(c => `<div class="row"><span class="muted">${c.n}</span><span>${c.name}, ${PROJECTS.filter(p => p.cat === c.key).length}</span></div>`).join("")}
+  </div>`;
+}
+
+// ---------- Routing (plain #name) ----------
+const route = () => decodeURIComponent(location.hash.slice(1)).toLowerCase();
+function render() {
+  const r = route();
+  hideTag(); hidePeek();
+  thumbMode = false; $("#count").onclick = null;
+  if (io) { io.disconnect(); io = null; }
+  renderAside(r);
+  $("#nav-info").classList.toggle("on", r === "info");
+  $("#nav-index").classList.toggle("on", r === "index");
+  const p = PROJECTS.find(x => x.id.toLowerCase() === r);
+  if (r === "info") viewInfo();
+  else if (r === "index") viewIndex();
+  else if (p) viewProject(p);
+  else viewField(catOf(r) ? r : null);
+  window.scrollTo(0, 0);
+}
+$("#name").textContent = SITE.name;
+document.title = SITE.name;
+addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
